@@ -8,4 +8,13 @@ public class Particle
     Vector2 velocity;
     int size;
     Color color;
+
+    public void Setup()
+    {
+
+    }
+    public void Update()
+    {
+
+    }
 }
