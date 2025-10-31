@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
-namespace particle_collision_demo
+namespace MohawkGame2D;
+public class Obstacle
 {
-    internal class Obstacle
-    {
-    }
 }
