@@ -6,6 +6,7 @@ namespace MohawkGame2D;
 public class Particle
 {
     Vector2 position;
+    Vector2 previousPosition;
     Vector2 velocity;
     int size;
     Color color;
@@ -24,8 +25,11 @@ public class Particle
         size = 3; // 3x3 pixels
         color = Color.Magenta;
     }
-    public void Update(Obstacle obstacle)
+    public void Update(Obstacle[] obstacles)
     {
+        // Record where we are
+        previousPosition = position;
+
         // Move particle
         position += velocity * Time.DeltaTime;
 
@@ -33,7 +37,8 @@ public class Particle
         ConstrainToScreenBounds();
 
         // Collide with obstacles
-        CollideWithObstacle(obstacle);
+        for (int i = 0; i < obstacles.Length; i++)
+            CollideWithObstacle(obstacles[i]);
 
         // Draw particle
         Draw.LineSize = 0;
@@ -111,14 +116,33 @@ public class Particle
         // If colliding at all
         if (isParticleWithinL && isParticleWithinR && isParticleWithinT && isParticleWithinB)
         {
-            // If within top and bottom
+            // Compare to centre of obstacle, snap to closest edge
+            float obstacleCentreX = obstacle.position.X + obstacle.size.X / 2;
+            float obstacleCentreY = obstacle.position.Y + obstacle.size.Y / 2;
 
-            if (isParticleWithinT && isParticleWithinB)
+            // If previous position is left of left edge and current position is below centre
+            if (previousPosition.X + size < obstacleB && particleR < obstacleCentreX)
+                position.X = obstacleL - size - 1;
+
+            // If previous position is right of right edge and current position is below centre 
+            if (previousPosition.X > obstacleT && particleL > obstacleCentreX)
+                position.X = obstacleR + 1;
+
+            // If previous position is below bottom and current position is below centre
+            if (previousPosition.Y > obstacleB && particleT > obstacleCentreY)
+                position.Y = obstacleB + 1;
+
+            // If previous position is above top and current position is below centre 
+            if (previousPosition.Y + size < obstacleT && particleB < obstacleCentreY)
+                position.Y = obstacleT - size - 1;
+
+            // Bottom and Top
+            if (particleB <= obstacleB && particleT >= obstacleT)
             {
                 velocity.X = -velocity.X;
             }
-            // If within left and right
-            if (isParticleWithinL && isParticleWithinR)
+            // Left and Right
+            if (particleL >= obstacleL && particleR <= obstacleR)
             {
                 velocity.Y = -velocity.Y;
             }
